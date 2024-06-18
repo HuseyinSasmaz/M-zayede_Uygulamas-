@@ -1,0 +1,40 @@
+﻿@model List<Müzayede_Uygulaması.Models.ÜrünListeleme>
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> userManager
+@{
+    ViewData["Title"] = "Listem";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+
+<h1>Listem</h1>
+
+
+@foreach(var item in Model)
+{
+    @if (userManager.GetUserId(User) == item.User.Id)
+    {
+        @if(Model !=null && Model.Any(item=>item.User.Id==userManager.GetUserId(User)))
+        {
+            <div class="card mb-3" style="max-width: 650px; max-height:400px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="@item.ResimYolu" class="bd-placeholder-img img-fluid rounded-start" width="100%" height="280" />
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Başlık</h5>
+                            <p class="card-text">@item.Açıklama</p>
+
+                            <div>İlanı veren: @item.User.UserName</div>
+                            <div>Teklif: @item.Fiyat</div>
+                           
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+      
+    }
+}

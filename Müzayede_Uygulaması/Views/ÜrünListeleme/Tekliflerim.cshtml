@@ -1,0 +1,49 @@
+﻿@model List<Müzayede_Uygulaması.Models.Teklif>
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> userManager
+
+@{
+    ViewData["Title"] = "Tekliflerim";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Tekliflerim</h1>
+<br />
+<br />
+@foreach (var item in Model)
+{
+    @if (Model.Any())
+    {
+        @if (userManager.GetUserId(User) == item.IdentityUserId)
+        {
+            @if (Model != null && Model.Any(item => item.IdentityUserId == userManager.GetUserId(User)))
+            {
+                <div class="card mb-3" style="max-width: 650px; max-height:400px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="@item.ÜrünListeleme.ResimYolu" class="bd-placeholder-img img-fluid rounded-start" width="100%" height="280" />
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.ÜrünListeleme.Başlık</h5>
+                                <p class="card-text">@item.ÜrünListeleme.Açıklama</p>
+
+                                <div>İlanı veren: @item.ÜrünListeleme.User.UserName</div>
+                                <div>Teklif: @item.Fiyat</div>
+                                <br />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        }
+    }
+    else
+    {
+        <h5>Teklif yok</h5>
+    }
+
+}
+

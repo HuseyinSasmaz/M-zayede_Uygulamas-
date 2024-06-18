@@ -1,0 +1,147 @@
+﻿@model Müzayede_Uygulaması.Models.ÜrünListeleme
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> userManager
+@{
+    ViewData["Title"] = "Details";
+    DateTime tarih;
+}
+
+
+
+@if (User.Identity.IsAuthenticated)
+{
+
+    if (Model.Satıldımı == true)
+    {
+        var yuksekTeklif = Model.Teklifs.OrderByDescending(x => x.Fiyat).FirstOrDefault();
+        if (yuksekTeklif != null)
+        {
+            if (userManager.GetUserId(User) == yuksekTeklif.IdentityUserId)
+            {
+                <h5>Tebrikler siz kazandınız...</h5>
+            }
+            else if (userManager.GetUserId(User) == Model.User.Id)
+            {
+                <h5>@ViewBag.KazananUserName - @ViewBag.KazananTeklif₺</h5>
+            }
+            else
+            {
+                <p>Teklif kapandı.</p>
+            } 
+        }
+       
+    }
+}
+
+
+
+<div class="card mb-3" style="max-width: 650px; max-height:400px;">
+    <div class="row g-0">
+        <div class="col-md-4">
+            <img src="@Model.ResimYolu" class="bd-placeholder-img img-fluid rounded-start" width="100%" height="280" />
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Başlık</h5>
+                <p class="card-text">@Model.Açıklama</p>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-action="TeklifVer" method="post">
+                        <input type="number" name="Fiyat" min="@Model.Fiyat" step="1" placeholder="@Model.Fiyat.ToString()" />
+                        <input type="hidden" name="IdentityUserId" value="@userManager.GetUserId(User)" class="form-control" />
+                        <input type="hidden" name="ÜrünListelemeId" value="@Model.Id" class="form-control" />
+                        <input type="submit" class="btn btn-primary" value="Gönder" />
+                    </form>
+                    <p>Teklif sayısı: @Model.Teklifs.Count().ToString()</p>
+
+                    @if (userManager.GetUserId(User) == Model.User.Id)
+                    {
+                        @foreach (var item in Model.Teklifs)
+                        {
+                            @if (item.User != null && !string.IsNullOrEmpty(item.User.UserName))
+                            {
+                                <p>Teklifi yapan: @item.User.UserName - Yapılan teklif: @item.Fiyat.ToString() ₺</p>
+                            }
+                            else if (!string.IsNullOrEmpty(item.IdentityUserId))
+                            {
+                                var user = await userManager.FindByIdAsync(item.IdentityUserId);
+                                if (user != null)
+                                {
+                                    <p>Teklifi yapan: @user.UserName - Yapılan teklif: @item.Fiyat.ToString() ₺</p>
+                                }
+                                else
+                                {
+                                    <p>Teklifi yapan: Kullanıcı bulunamadı.!!! - Yapılan teklif: @item.Fiyat.ToString() ₺</p>
+                                }
+                            }
+                            else
+                            {
+                                <p>Teklifi yapan: Kullanıcı bulunamadı.!!! - Yapılan teklif: @item.Fiyat.ToString() ₺</p>
+                            }
+
+
+                        }
+
+
+                    }
+
+
+                }
+                else
+                {
+                    <div>
+                        <input disabled type="number" min="@Model.Fiyat" step="1" placeholder="@Model.Fiyat.ToString()" />
+                        <input disabled type="submit" class="btn btn-primary" value="Gönder" />
+                    </div>
+                    <p>Teklif sayısı: @Model.Teklifs.Count().ToString()</p>
+                }
+                <div>İlanı veren: @Model.User.UserName</div>
+                <br />
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @if (userManager.GetUserId(User) == Model.User.Id)
+                    {
+                        if (Model.Satıldımı == true)
+                        {
+                            <a disabled asp-action="TeklifiKapat" asp-route-id="@Model.Id">TeklifiKapat</a>
+                        }
+                        else if (Model.Satıldımı == false)
+                        {
+                            <a asp-action="TeklifiKapat" asp-route-id="@Model.Id">TeklifiKapat</a>
+                        }
+
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="container">
+        <form asp-action="YorumEkle" method="post">
+            <h6>Yorum Ekle</h6>
+            <textarea name="İçerik" style="width:40%"></textarea>
+            <input type="hidden" name="IdentityUserId" value="@userManager.GetUserId(User)" class="form-control" />
+            <input type="hidden" name="ÜrünListelemeId" value="@Model.Id" class="form-control" />
+            <input type="submit" class="btn btn-primary" value="Gönder" />
+        </form>
+    </div>
+}
+else
+{
+    <h6>Yorum Ekle</h6>
+    <textarea name="İçerik" style="width:40%"></textarea>
+    <input disabled type="submit" class="btn btn-primary" value="Gönder" />
+}
+<br />
+<div class="container">
+    <h6>Yorumlar</h6>
+    @foreach (var item in Model.Yorums)
+    {
+        <div>
+            <p>@item.İçerik---@item.User.UserName )</p>
+        </div>
+    }
+</div>

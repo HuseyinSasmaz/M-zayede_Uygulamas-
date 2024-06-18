@@ -1,0 +1,53 @@
+﻿@model Müzayede_Uygulaması.Models.ÜrünListelemeViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Ürün ekle</h1>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Başlık" class="control-label"></label>
+                <input asp-for="Başlık" class="form-control" />
+                <span asp-validation-for="Başlık" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Açıklama" class="control-label"></label>
+                <input asp-for="Açıklama" class="form-control" />
+                <span asp-validation-for="Açıklama" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Fiyat" class="control-label">Başlangıç fiyatı:</label>
+                <input asp-for="Fiyat" class="form-control" />
+                <span asp-validation-for="Fiyat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Resim" class="control-label"></label>
+                <input asp-for="Resim" type="file" class="form-control" accept="images/*" style="width:30%" />
+                <span asp-validation-for="Resim" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <input type="hidden" asp-for="IdentityUserId" class="form-control" value="@ViewBag.user" />
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Ekle" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<div>
+    <a asp-action="Index">Geri</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
